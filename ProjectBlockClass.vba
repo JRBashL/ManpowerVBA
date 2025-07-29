@@ -48,16 +48,23 @@ Public Sub AddProjectBlock()
     Dim ws As Worksheet
     Set ws = Worksheets("Alberta")
 
-    ' Populate the rest of the column as blanks
+    ' Insert Rows
     Dim i as Integer
     For i = 1 to v_blockHeight 
         ws.Rows(v_headRow).Insert Shift:=xlDown
-        ws.Rows(v_headRow + i - 1).Interior.Color = RGB(0, 0, 255)
         Debug.Print v_headRow
     Next i
+
     ' Populate Project Name and Project Number
     ws.Cells(v_headRow, "A").Value = v_projectName
     ws.Cells(v_headRow + 2, 1).Value = v_projectNumber
+
+    ' Formatting
+        For i = 1 to v_blockHeight 
+        ws.Rows(v_headRow + i - 1).Interior.Color = RGB(0, 0, 255)
+        Debug.Print v_headRow
+    Next i
+
 
 
    
