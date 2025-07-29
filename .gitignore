@@ -1,0 +1,7 @@
+#Ignore all files
+*
+
+#Except for these
+!.gitignore
+!*.vba
+!*.code-workspace
