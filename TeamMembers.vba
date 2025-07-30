@@ -1,33 +1,43 @@
-' === ProjectBlock.vba ===
+' === TeamMembers.vba ===
+' This is in a class module
 
 ' Strong type things like in C#
 Option Explicit
 
 '--- Properties ---
-Public TeamMembers As New Collection
+Public TeamMembersDict As Object
 Public TeamSize As Integer
 
-Public Sub CreateTeamCollection()
-    TeamMembers.Add("Pertti")
-    TeamMembers.Add("Martin")
-    TeamMembers.Add("EIT-Edm")
-    TeamMembers.Add("Craig")
-    TeamMembers.Add("Mike T")
-    TeamMembers.Add("Jiaxun")
-    TeamMembers.Add("EIT-Calgary")
-    TeamMembers.Add("Mau")
-    TeamMembers.Add("Quinn")
-    TeamMembers.Add("Jorrell")
-    TeamMembers.Add("Syed")
-    TeamMembers.Add("Ping")
-    TeamMembers.Add("Yang")
-    TeamMembers.Add("Denis")
-    TeamMembers.Add("Artem")
-    TeamMembers.Add("Christy")
-    TeamMembers.Add("EC -Marian")
-    TeamMembers.Add("Moosa")
-    TeamMembers.Add("Shyam")
-    TeamMembers.Add("(EIT/Others)")
+'--- Constructor-like method ---
+Public Sub Constructor()
+    Set TeamMembersDict = CreateObject("Scripting.Dictionary")
+    CreateTeamCollection
+    TeamSize = TeamMembersDict.Count
 End Sub
 
-TeamSize = TeamMembers.Count
+Private Sub CreateTeamCollection()
+
+    TeamMembersDict.RemoveAll
+
+    dim endoflist As Boolean
+    dim i As Integer
+    dim ws As Worksheet
+
+    endoflist = false
+    i = 1
+    set ws = WorkSheets("Team")
+
+    ' Goes through the data in the worksheet and if a gap in both columns are found, it ends
+    Do While endoflist = false
+        if IsEmpty(ws.Cells(i,1)) And IsEmpty(ws.Cells(i, 2)) Then 
+            Exit Do
+        else
+            TeamMembersDict.Add ws.Cells(i, 1).Value, ws.Cells(i, 2).Value
+            i = i + 1
+            
+        end if
+    Loop
+
+End Sub
+
+
