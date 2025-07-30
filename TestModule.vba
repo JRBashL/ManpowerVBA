@@ -1,12 +1,16 @@
-' Create instance of the class
+' Test
+Public team As TeamMembers
+Public TestProject As ProjectBlockClass
 
-Sub CreateTestProjectBlock()
-
-    CreateTeamCollection
+Sub CreateTest()
+    Set team = New TeamMembers
+    team.Constructor
     
-    Dim TestProject As ProjectBlock
-    Set TestProject = New ProjectBlock
+    Dim blockheight As Integer
+    blockheight = team.TeamMembersDict.Count
     
-    TestProject.Constructor "TestProject", "12345", 2
-    TestProject.AddProjectBlock
+    Set TestProject = New ProjectBlockClass
+    
+    TestProject.Constructor "My Cool Project", 123456, 2, blockheight + 1, 35
+    TestProject.AddProjectBlock team
 End Sub
