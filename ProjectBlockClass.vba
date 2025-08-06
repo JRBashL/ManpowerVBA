@@ -12,6 +12,7 @@ Private v_endRow As Integer
 Private v_blockHeight As Integer
 Private v_blockLength As Integer
 Private v_endColLetter As String
+Private v_data As Variant
 
 '--- Constructor-like method ---
 Public Sub Constructor(ByVal projectName As String, _
@@ -62,6 +63,7 @@ End Property
 Public Property Let HeadRow(ByVal value As Integer)
     v_headRow = value
     v_endRow = v_headRow + v_blockHeight - 1
+    OccupyData
 End Property
 
 '--- Example Method ---
@@ -76,6 +78,8 @@ Public Sub AddProjectBlock(team As TeamMembers)
         ws.Rows(v_headRow).Insert Shift:=xlDown
         Debug.Print v_headRow
     Next i
+
+    OccupyData
 
     ' Populate Project Name and Project Number
     ws.Cells(v_headRow, "A").Value = v_projectName
@@ -107,7 +111,6 @@ Public Sub AddProjectBlock(team As TeamMembers)
     Next i
 End Sub
 
-
 Public Sub DeleteProject()
     Dim deleteRange as Range
     Dim ws As Worksheet
@@ -116,4 +119,22 @@ Public Sub DeleteProject()
     Set deleteRange = ws.Range("A" & v_headRow & ":A" & v_endRow)
 
     deleteRange.EntireRow.Delete
+End Sub
+
+Public Sub OccupyData
+    ' Occupy data. v_headRow + 1 is to match TeamMembers index starting at the 2nd row of the project block. v_blocklength - 1 is to remove
+    ' the column at the end which is a summation 
+    v_data = ws.Range("C" & (v_headRow + 1) & ":" & GetColumnLetter(v_blockLength - 1) & v_endRow)
+End Sub
+
+Public Function GetTeamMemberHours(ByVal teamMemberName As String, ByVal week as Integer, ByVal team as TeamMembers) As Integer
+    If Not IsEmpty(v_data) Then
+        GetTeamMemberHours = v_data(team.TeamMembersNum(teamMemberName), week)
+    End If
+End Sub
+
+Public Sub SetTeamMemberHours(ByVal hours as Variant, ByVal teamMemberName As String, ByVal week as Integer, ByVal team as TeamMembers)
+    If Not IsEmpty(v_data) Then
+        v_data(team.TeamMembersNum(teamMemberName), week) = hours
+    End If
 End Sub
