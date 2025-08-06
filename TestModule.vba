@@ -8,7 +8,7 @@ Sub CreateTest()
 
     Dim projectName As String
     Dim projectLead As String
-    Dim projectNum As Integer
+    Dim projectNum As Long
     Dim startRow As Integer
     Dim blockheight As Integer
     Dim blockwidth As Integer
