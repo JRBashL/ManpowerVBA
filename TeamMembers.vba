@@ -5,36 +5,39 @@
 Option Explicit
 
 '--- Properties ---
-Public TeamMembersDict As Object
+Public TeamMembersNum As Object
+Public TeamMembersName As Object
 Public TeamSize As Integer
 
 '--- Constructor-like method ---
 Public Sub Constructor()
-    Set TeamMembersDict = CreateObject("Scripting.Dictionary")
+    Set TeamMembersNum = CreateObject("Scripting.Dictionary")
+    Set TeamMembersName = CreateObject("Scripting.Dictionary")
     CreateTeamCollection
-    TeamSize = TeamMembersDict.Count
+    TeamSize = TeamMembersNum.Count
 End Sub
 
 Private Sub CreateTeamCollection()
 
-    TeamMembersDict.RemoveAll
+    If Not TeamMembersNum Is Nothing Then TeamMembersNum.RemoveAll
+    If Not TeamMembersName Is Nothing Then TeamMembersName.RemoveAll
 
-    dim endoflist As Boolean
-    dim i As Integer
-    dim ws As Worksheet
+    Dim endoflist As Boolean
+    Dim i As Integer
+    Dim ws As Worksheet
 
-    endoflist = false
+    endoflist = False
     i = 1
-    set ws = WorkSheets("Team")
+    set ws = Worksheets("Team")
 
     ' Goes through the data in the worksheet and if a gap in both columns are found, it ends
-    Do While endoflist = false
+    Do While endoflist = False
         if IsEmpty(ws.Cells(i,1)) And IsEmpty(ws.Cells(i, 2)) Then 
             Exit Do
         else
-            TeamMembersDict.Add ws.Cells(i, 1).Value, ws.Cells(i, 2).Value
-            i = i + 1
-            
+            TeamMembersNum.Add ws.Cells(i, 1).Value, ws.Cells(i, 2).Value
+            TeamMembersName.Add ws.Cells(i, 2).Value, ws.Cells(i, 1).Value
+            i = i + 1           
         end if
     Loop
 

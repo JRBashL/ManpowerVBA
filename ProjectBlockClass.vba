@@ -64,7 +64,7 @@ Public Sub AddProjectBlock(team As TeamMembers)
     ' Populate Team 
     ws.Cells(v_headRow, 2).Value = "*"
     For i = 1 to v_blockHeight - 1
-        ws.Cells(v_headRow + i, 2).Value = team.TeamMembersDict(i)
+        ws.Cells(v_headRow + i, 2).Value = team.TeamMembersNum(i)
     Next i
 
     ' Formatting
