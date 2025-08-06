@@ -17,13 +17,13 @@ Private v_ws As Worksheet
 
 '--- Constructor-like method ---
 Public Sub Constructor(ByVal projectName As String, _
-                        ByVal teamLead As String, _ 
-                        ByVal projectNumber as Variant, _ 
+                        ByVal teamLead As String, _
+                        ByVal projectNumber as Variant, _
                         ByVal headRow as Integer, _
                         ByVal blockHeight As Integer, _
                         ByVal blockLength As Integer, _
                         ByVal worksheet As String)
-    v_projectName = projectname
+    v_projectName = projectName
     v_teamLead = teamLead
     v_projectNumber = projectNumber
     v_headRow = headRow
@@ -31,7 +31,7 @@ Public Sub Constructor(ByVal projectName As String, _
     v_endRow = headRow + blockHeight - 1
     v_blockLength = blockLength
     v_endColLetter = GetColumnLetter(blockLength)
-    v_ws = Worksheets(worksheet)
+    Set v_ws = Worksheets(worksheet)
 End Sub
 
 '--- Getters / Setters ---
@@ -129,12 +129,12 @@ End Sub
 
 Public Function GetTeamMemberHours(ByVal teamMemberName As String, ByVal week as Integer, ByVal team as TeamMembers) As Integer
     If Not IsEmpty(v_data) Then
-        GetTeamMemberHours = v_data(team.TeamMembersNum(teamMemberName), week)
+        GetTeamMemberHours = v_data(team.TeamMembersName(teamMemberName), week)
     End If
-End Sub
+End Function
 
 Public Sub SetTeamMemberHours(ByVal hours as Variant, ByVal teamMemberName As String, ByVal week as Integer, ByVal team as TeamMembers)
     If Not IsEmpty(v_data) Then
-        v_data(team.TeamMembersNum(teamMemberName), week) = hours
+        v_data(team.TeamMembersName(teamMemberName), week) = hours
     End If
 End Sub
