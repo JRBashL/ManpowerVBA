@@ -106,3 +106,14 @@ Public Sub AddProjectBlock(team As TeamMembers)
         ws.rows(i).RowHeight = 15
     Next i
 End Sub
+
+
+Public Sub DeleteProject()
+    Dim deleteRange as Range
+    Dim ws As Worksheet
+
+    Set ws = Worksheets("Test")
+    Set deleteRange = ws.Range("A" & v_headRow & ":A" & v_endRow)
+
+    deleteRange.EntireRow.Delete
+End Sub
