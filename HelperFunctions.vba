@@ -4,18 +4,23 @@ Option Explicit
 
 '=== Column number to letter ===
 Public Function GetColumnLetter(ByVal colNum As Long) As String
-    GetColumnLetter = Split(Cells(1, colNum).Address(False, False), "$")(0)
+    GetColumnLetter = Replace(Cells(1, colNum).Address(False, False), "1", "")
 End Function
 
 '=== Column letter to number ===
 Public Function GetColumnNum(ByVal colLetter As String) As Long
-    Dim i As Long, result As Long
+    Dim i As Long
+    Dim result As Long
+    Dim letter As String
     
-    GetColumnNum = UCase(colLetter)
+    colLetter = UCase(colLetter) ' convert to uppercase string
     
+    result = 0
     For i = 1 To Len(colLetter)
-        result = result * 26 + (Asc(Mid(colLetter, i, 1)) - Asc("A") + 1)
+        letter = Mid(colLetter, i, 1)
+        result = result * 26 + (Asc(letter) - Asc("A") + 1)
     Next i
     
-    ColNumber = result
+    GetColumnNum = result
 End Function
+
