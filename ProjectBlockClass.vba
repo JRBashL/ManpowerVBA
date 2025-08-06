@@ -14,8 +14,11 @@ Private v_blockLength As Integer
 Private v_endColLetter As String
 
 '--- Constructor-like method ---
-Public Sub Constructor(ByVal projectName As String, ByVal teamLead As String, ByVal projectNumber as Variant, 
-                        ByVal headRow as Integer, ByVal blockHeight As Integer, 
+Public Sub Constructor(ByVal projectName As String, _
+                        ByVal teamLead As String, _ 
+                        ByVal projectNumber as Variant, _ 
+                        ByVal headRow as Integer, _
+                        ByVal blockHeight As Integer, _
                         ByVal blockLength As Integer)
     v_projectName = projectname
     v_teamLead = teamLead
@@ -58,6 +61,7 @@ End Property
 
 Public Property Let HeadRow(ByVal value As Integer)
     v_headRow = value
+    v_endRow = v_headRow + v_blockHeight - 1
 End Property
 
 '--- Example Method ---
@@ -88,7 +92,7 @@ Public Sub AddProjectBlock(team As TeamMembers)
     Dim templateRange As Range
     Dim desRange As Range
     Set templateRange = Worksheets("Template").Range("A1:" & v_endColLetter & v_blockLength)
-    Set desRange = ws.Range("A" & v_headRow & ":" & endColLetter & v_endRow)
+    Set desRange = ws.Range("A" & v_headRow & ":" & v_endColLetter & v_endRow)
     templateRange.Copy
     desRange.PasteSpecial xlPasteFormats
 
@@ -101,6 +105,4 @@ Public Sub AddProjectBlock(team As TeamMembers)
     for i = v_headRow to v_endRow
         ws.rows(i).RowHeight = 15
     Next i
-    
-
 End Sub
