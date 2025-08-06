@@ -13,6 +13,7 @@ Private v_blockHeight As Integer
 Private v_blockLength As Integer
 Private v_endColLetter As String
 Private v_data As Variant
+Private v_ws As Worksheet
 
 '--- Constructor-like method ---
 Public Sub Constructor(ByVal projectName As String, _
@@ -20,7 +21,8 @@ Public Sub Constructor(ByVal projectName As String, _
                         ByVal projectNumber as Variant, _ 
                         ByVal headRow as Integer, _
                         ByVal blockHeight As Integer, _
-                        ByVal blockLength As Integer)
+                        ByVal blockLength As Integer, _
+                        ByVal worksheet As String)
     v_projectName = projectname
     v_teamLead = teamLead
     v_projectNumber = projectNumber
@@ -29,6 +31,7 @@ Public Sub Constructor(ByVal projectName As String, _
     v_endRow = headRow + blockHeight - 1
     v_blockLength = blockLength
     v_endColLetter = GetColumnLetter(blockLength)
+    v_ws = Worksheets(worksheet)
 End Sub
 
 '--- Getters / Setters ---
@@ -67,56 +70,53 @@ Public Property Let HeadRow(ByVal value As Integer)
 End Property
 
 '--- Example Method ---
-Public Sub AddProjectBlock(team As TeamMembers)
-    ' Shorthand worksheets
-    Dim ws As Worksheet
-    Set ws = Worksheets("Test")
+Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
 
     ' Insert Rows
     Dim i as Integer
     For i = 1 to v_blockHeight 
-        ws.Rows(v_headRow).Insert Shift:=xlDown
+        v_ws.Rows(v_headRow).Insert Shift:=xlDown
         Debug.Print v_headRow
     Next i
 
     OccupyData
 
     ' Populate Project Name and Project Number
-    ws.Cells(v_headRow, "A").Value = v_projectName
-    ws.Cells(v_headRow + 1, 1).Value = v_teamLead
-    ws.Cells(v_headRow + 2, 1).Value = v_projectNumber
+    v_ws.Cells(v_headRow, "A").Value = v_projectName
+    v_ws.Cells(v_headRow + 1, 1).Value = v_teamLead
+    v_ws.Cells(v_headRow + 2, 1).Value = v_projectNumber
 
     ' Populate Team 
-    ws.Cells(v_headRow, 2).Value = "*"
+    v_ws.Cells(v_headRow, 2).Value = "*"
     For i = 1 to v_blockHeight - 1
-        ws.Cells(v_headRow + i, 2).Value = team.TeamMembersNum(i)
+        v_ws.Cells(v_headRow + i, 2).Value = team.TeamMembersNum(i)
     Next i
 
     ' Formatting Copy/Paste from Template
     Dim templateRange As Range
     Dim desRange As Range
-    Set templateRange = Worksheets("Template").Range("A1:" & v_endColLetter & v_blockLength)
-    Set desRange = ws.Range("A" & v_headRow & ":" & v_endColLetter & v_endRow)
+    Set templateRange = Worksheets(templateSheet).Range("A1:" & v_endColLetter & v_blockLength)
+    Set desRange = v_ws.Range("A" & v_headRow & ":" & v_endColLetter & v_endRow)
     templateRange.Copy
     desRange.PasteSpecial xlPasteFormats
 
     ' Set Widths
-    ws.columns(1).ColumnWidth = 64.14
-    ws.columns(2).ColumnWidth = 11
+    v_ws.columns(1).ColumnWidth = 64.14
+    v_ws.columns(2).ColumnWidth = 11
     for i = 3 to v_blockLength
-        ws.columns(i).ColumnWidth = 10
+        v_ws.columns(i).ColumnWidth = 10
     Next i
     for i = v_headRow to v_endRow
-        ws.rows(i).RowHeight = 15
+        v_ws.rows(i).RowHeight = 15
     Next i
 End Sub
 
 Public Sub DeleteProject()
     Dim deleteRange as Range
-    Dim ws As Worksheet
+    Dim v_ws As Worksheet
 
-    Set ws = Worksheets("Test")
-    Set deleteRange = ws.Range("A" & v_headRow & ":A" & v_endRow)
+    Set v_ws = Worksheets("Test")
+    Set deleteRange = v_ws.Range("A" & v_headRow & ":A" & v_endRow)
 
     deleteRange.EntireRow.Delete
 End Sub
@@ -124,7 +124,7 @@ End Sub
 Public Sub OccupyData
     ' Occupy data. v_headRow + 1 is to match TeamMembers index starting at the 2nd row of the project block. v_blocklength - 1 is to remove
     ' the column at the end which is a summation 
-    v_data = ws.Range("C" & (v_headRow + 1) & ":" & GetColumnLetter(v_blockLength - 1) & v_endRow)
+    v_data = v_ws.Range("C" & (v_headRow + 1) & ":" & GetColumnLetter(v_blockLength - 1) & v_endRow)
 End Sub
 
 Public Function GetTeamMemberHours(ByVal teamMemberName As String, ByVal week as Integer, ByVal team as TeamMembers) As Integer
