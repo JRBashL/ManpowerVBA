@@ -5,12 +5,25 @@ Public TestProject As ProjectBlockClass
 Sub CreateTest()
     Set team = New TeamMembers
     team.Constructor
-    
+
+    Dim projectName As String
+    Dim projectLead As String
+    Dim projectNum As Integer
+    Dim startRow As Integer
     Dim blockheight As Integer
-    blockheight = team.TeamMembersDict.Count
-    
+    Dim blockwidth As Integer
+    Dim worksheetName As String
+
+    projectName = "My Cool Project"
+    projectLead = "Pertti"
+    projectNum = 123456
+    startRow = 55
+    blockheight = team.TeamMembersNum.Count + 1
+    blockwidth = 35
+    worksheetName = "Test"
+
     Set TestProject = New ProjectBlockClass
     
-    TestProject.Constructor "My Cool Project", 123456, 2, blockheight + 1, 35
-    TestProject.AddProjectBlock team
+    TestProject.Constructor projectName, projectLead, projectNum, startRow, blockheight, blockwidth, worksheetName
+    TestProject.AddProjectBlock team, "Template"
 End Sub
