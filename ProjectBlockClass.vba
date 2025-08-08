@@ -22,7 +22,7 @@ Public Sub Constructor(ByVal projectName As String, _
                         ByVal headRow as Integer, _
                         ByVal blockHeight As Integer, _
                         ByVal blockLength As Integer, _
-                        ByVal worksheet As String)
+                        ByVal worksheet As Worksheets)
     v_projectName = projectName
     v_teamLead = teamLead
     v_projectNumber = projectNumber
@@ -31,7 +31,7 @@ Public Sub Constructor(ByVal projectName As String, _
     v_endRow = headRow + blockHeight - 1
     v_blockLength = blockLength
     v_endColLetter = GetColumnLetter(blockLength)
-    Set v_ws = Worksheets(worksheet)
+    Set v_ws = worksheet
 End Sub
 
 '--- Getters / Setters ---
