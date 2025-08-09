@@ -27,16 +27,16 @@ Private Sub CreateTeamCollection()
     Dim ws As Worksheet
 
     endoflist = False
-    i = 1
-    set ws = Worksheets("Team")
+    i = 2 ' =2 due to the title being row 1 in Worksheets("Scripting")
+    set ws = Worksheets("Scripting")
 
     ' Goes through the data in the worksheet and if a gap in both columns are found, it ends
     Do While endoflist = False
-        if IsEmpty(ws.Cells(i,1)) And IsEmpty(ws.Cells(i, 2)) Then 
+        if IsEmpty(ws.Cells(i,4)) And IsEmpty(ws.Cells(i, 5)) Then 
             Exit Do
         else
-            TeamMembersNum.Add ws.Cells(i, 1).Value, ws.Cells(i, 2).Value
-            TeamMembersName.Add ws.Cells(i, 2).Value, ws.Cells(i, 1).Value
+            TeamMembersNum.Add ws.Cells(i, 4).Value, ws.Cells(i, 5).Value
+            TeamMembersName.Add ws.Cells(i, 5).Value, ws.Cells(i, 4).Value
             i = i + 1           
         end if
     Loop
