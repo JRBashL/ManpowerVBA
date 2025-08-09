@@ -197,3 +197,29 @@ Public Function CheckMatchStringArray(ByVal inputString As String, ByRef checkAr
     ' If Function fully completes, i.e. none of the elements in the checkArray matches the input, exits function with false
     CheckMatchStringArray = False
 End Function
+
+Public Sub UnlockScriptingSheet()
+    Dim wsScripting As Worksheet
+    Dim myPassword As String
+
+    Set wsScripting = WorkSheets("Scripting")
+    myPassword = "ManpowerVBA"
+    
+    ' Unlock the worksheet with the password
+    If wsScripting.ProtectContents = True Then
+        wsScripting.Unprotect Password:=myPassword
+    End If
+End Sub
+
+Public Sub LockScriptingSheet()
+    Dim wsScripting As Worksheet
+    Dim myPassword As String
+
+    Set wsScripting = WorkSheets("Scripting")
+    myPassword = "ManpowerVBA"
+    
+    ' Unlock the worksheet with the password
+    If wsScripting.ProtectContents = False Then
+        wsScripting.Protect Password:=myPassword
+    End If
+End Sub

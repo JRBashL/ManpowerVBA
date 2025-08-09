@@ -1,4 +1,4 @@
-' Test
+' Main Module
 Public team As TeamMembers
 Public TestProject As ProjectBlockClass
 
@@ -6,13 +6,22 @@ Public Projects As New Scripting.Dictionary
 Public ProjectKeyArray() As String
 
 Sub RefreshData()
+    UnlockScriptingSheet
     Set team = New TeamMembers
     team.Constructor
     ReadProjectData Projects, ProjectKeyArray
 End Sub
 
-Sub WeekReportButton()
+Sub RefreshDataButton()
+    UnlockScriptingSheet
+    Set team = New TeamMembers
+    team.Constructor
+    ReadProjectData Projects, ProjectKeyArray
+    LockScriptingSheet
+End Sub
 
+Sub WeekReportButton()
+    UnlockScriptingSheet
     RefreshData
     
     Dim wsScripting As Worksheet
@@ -51,9 +60,11 @@ Sub WeekReportButton()
         maxWeek = wsScripting.Range("J5").value
         
     outputCell.value = CreateWeekReport(teamMemberName, week, Projects, team, maxWeek)
+    LockScriptingSheet
 End Sub
 
 Sub FindTeamMemberHoursButton()
+    UnlockScriptingSheet
     RefreshData
     
     Dim wsScripting As Worksheet
@@ -95,9 +106,11 @@ Sub FindTeamMemberHoursButton()
     End If
 
     outputCell.Value = Projects(project).GetTeamMemberHours(teamMemberName, week, team)
+    LockScriptingSheet
 End Sub
 
 Sub SetTeamMemberHoursButton()
+    UnlockScriptingSheet
     RefreshData
     
     Dim wsScripting As Worksheet
@@ -152,4 +165,5 @@ Sub SetTeamMemberHoursButton()
 
     Projects(project).SetTeamMemberHours hours, teamMemberName, week, team
     feedbackCell.Value = "Hours set."
+    LockScriptingSheet
 End Sub
