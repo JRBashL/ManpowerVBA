@@ -5,32 +5,50 @@ Public TestProject As ProjectBlockClass
 Public Projects As New Scripting.Dictionary
 Public ProjectKeyArray() As String
 
-Sub CreateTest()
+Sub RefreshData()
     Set team = New TeamMembers
     team.Constructor
-
-    Dim projectName As String
-    Dim projectLead As String
-    Dim projectNum As Long
-    Dim startRow As Integer
-    Dim blockheight As Integer
-    Dim blockwidth As Integer
-    Dim worksheetName As String
-
-    projectName = "My Cool Project"
-    projectLead = "Pertti"
-    projectNum = 123456
-    startRow = 55
-    blockheight = team.TeamMembersNum.Count + 1
-    blockwidth = 35
-    worksheetName = "Test"
-
-    Set TestProject = New ProjectBlockClass
-    
-    TestProject.Constructor projectName, projectLead, projectNum, startRow, blockheight, blockwidth, worksheetName
-    TestProject.AddProjectBlock team, "Template"
-
     ReadProjectData Projects, ProjectKeyArray
+End Sub
 
+Sub WeekReportButton()
 
+    RefreshData
+    
+    Dim wsScripting As Worksheet
+    Dim teamMemberName As String
+    Dim inputCellteamMemberName As Range
+    Dim week As Integer
+    Dim inputCellweek As Range
+    Dim maxWeek As Integer
+    Dim inputCellmaxWeek As Range
+    Dim outputCell As Range
+
+    Set wsScripting = Worksheets("Scripting")
+    Set inputCellteamMemberName = wsScripting.Range("J2")
+    Set inputCellweek = wsScripting.Range.("J3")
+    Set inputCellmaxWeek = wsScripting.Range("J5")
+    Set outputCell = wsScripting.Range("J7")
+    
+    
+    If inputCellteamMemberName.value = "" Then
+        outputCell.value = ""
+        Exit Sub
+    Else
+        teamMemberName = inputCellteamMemberName.value
+    End If
+    
+    If inputCellweek.value = "" Then
+        outputCell.value = ""
+        Exit Sub
+    Else
+        week = inputCellweek.value
+    End If
+    
+    If inputCellmaxWeek.value = "" Then
+        maxWeek = 0
+    End If
+        maxWeek = wsScripting.Range("J5").value
+        
+    outputCell.value = CreateWeekReport(teamMemberName, week, Projects, team, maxWeek)
 End Sub
