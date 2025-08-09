@@ -2,6 +2,9 @@
 Public team As TeamMembers
 Public TestProject As ProjectBlockClass
 
+Public Projects As New Scripting.Dictionary
+Public ProjectKeyArray() As String
+
 Sub CreateTest()
     Set team = New TeamMembers
     team.Constructor
@@ -26,4 +29,8 @@ Sub CreateTest()
     
     TestProject.Constructor projectName, projectLead, projectNum, startRow, blockheight, blockwidth, worksheetName
     TestProject.AddProjectBlock team, "Template"
+
+    ReadProjectData Projects, ProjectKeyArray
+
+
 End Sub
