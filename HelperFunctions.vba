@@ -134,7 +134,8 @@ Public Function CreateWeekReport(ByVal teamMemberName As String, _
                             projectList As Scripting.Dictionary, _
                             team As TeamMembers, _
                             Optional maxWeek As Integer = 0, _
-                            Optional isInitialCall As Boolean = True) As String
+                            Optional isInitialCall As Boolean = True, _
+                            Optional recursionCounter As Integer = 0) As String
 
     ' Declaration for parsing the projectList and extracting relevant data
     dim key As Variant
@@ -153,13 +154,27 @@ Public Function CreateWeekReport(ByVal teamMemberName As String, _
 
     ' Goes through projectList dictionary of ProjectBlockClass Instances
     For each key in projectList.Keys
+        ' This line tells VBA to ignore any errors and jump to the next line.
+        On Error Resume Next
         currentHours = projectList(key).GetTeamMemberHours(teamMemberName, week, team)
+        
+        ' Check if an error occurred. Err.Number will be 0 if no error.
+        If Err.Number <> 0 Then
+            ' An error occurred. Clear it so it doesn't affect subsequent code.
+            Err.Clear
+            ' Use GoTo to jump to the next iteration of the loop.
+            GoTo NextKey
+        End If
+        
+        ' Reset error handling to its default state.
+        On Error GoTo 0
         ' If hours are more than zero, extracts name and hours into separate collections, and tallies up total hours.
         If currentHours > 0 Then
             textList.Add projectList(key).ProjectName
             hoursList.Add currentHours
             totalhours = totalHours + currentHours
         End If
+NextKey:
     Next key
 
     ' String output generation
@@ -174,9 +189,9 @@ Public Function CreateWeekReport(ByVal teamMemberName As String, _
     output = output + vbNewLine & "Total: " & totalHours & vbNewLine & vbNewLine
 
     ' Recursion for following weeks
-    if maxWeek > 0 And week < maxWeek Then
+    if maxWeek > 0 And recursionCounter < maxWeek Then
         output = output + "Your hours for the following week" & vbNewLine & vbNewLine   
-        output = output + CreateWeekReport(teamMemberName, week + 1, projectList, team, maxWeek, False)
+        output = output + CreateWeekReport(teamMemberName, week + 1, projectList, team, maxWeek, False, recursionCounter + 1)
     End If
 
     CreateWeekReport = output
