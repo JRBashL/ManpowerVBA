@@ -24,25 +24,23 @@ Public Function GetColumnNum(ByVal colLetter As String) As Long
     GetColumnNum = result
 End Function
 
-Public Sub ReadProjectData
+Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyArray() As String)
+    ' Shorthand worksheets
     Dim wsAlberta As Worksheet
     Dim wsScripting As Worksheet
 
+    ' Variables for the project block class
     Dim startingRow As Integer
     Dim teamMembersQuantity As Integer
     Dim blockHeight As Integer
     Dim blockLength As Integer
     Dim headRow As Integer
-
     Dim projectName As String
     Dim projectLead As String
     Dim projectNumber As Variant
-
     Dim project As ProjectBlockClass
 
-    Dim projectList As New Scripting.Dictionary
-    Dim keyArray() As String
-
+    ' Variables for loops
     Dim emptyCounter As Integer
     Dim classListCounter As Integer
     Dim isEndOfList As Boolean
@@ -60,6 +58,8 @@ Public Sub ReadProjectData
     isEndOfList = False
     classListCounter = startingRow
 
+    ' Main while loop to read the project blocks in the "Alberta" worksheet. Creates a dictionary of projectblocks, using the project name as the key
+    ' While Loop stops when it finds 3 consecutive cells to be empty in the next iteration. While loop steps by classListCounter, which is set to the projectblock height
     Do While isEndOfList = False
         If wsAlberta.Cells(classListCounter, 1).Value = "" And wsAlberta.Cells(classListCounter + 1, 1).Value = ""And wsAlberta.Cells(classListCounter + 2).Value = "" Then
             isEndOfList = True
@@ -68,21 +68,22 @@ Public Sub ReadProjectData
             projectLead = wsAlberta.Cells(classListCounter + 1, 1).Value
             projectNumber = wsAlberta.Cells(classListCounter + 3, 1).Value
             headRow = classListCounter
-            ' blockheight defined
+            ' blockheight already defined
             ' blocklength defined
             ' worksheet defined
 
+            ' Create instance and add to list
             Set project = New ProjectBlockClass
             project.Constructor projectName, projectLead, projectNumber, headRow, blockHeight, blockLength, wsAlberta
-
             projectList.Add project.ProjectName, project
 
+            'Next iteration to jump to the next headrow of the next projectblock
             classListCounter = classListCounter + blockHeight
         End If
     Loop
-    
-    ReDim keyArray(1 to projectList.Count) As String
 
+    ' Create array of project names
+    ReDim keyArray(1 to projectList.Count) As String
     arrayCounter = 1
     For each key in projectList.Keys
         keyArray(arrayCounter) = key
@@ -100,3 +101,5 @@ Public Sub ReadProjectData
         Debug.Print "keyArray(" & i & "): " & keyArray(i)
     Next i
 End Sub
+
+

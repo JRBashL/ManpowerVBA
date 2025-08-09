@@ -32,6 +32,7 @@ Public Sub Constructor(ByVal projectName As String, _
     v_blockLength = blockLength
     v_endColLetter = GetColumnLetter(blockLength)
     Set v_ws = worksheet
+    OccupyData
 End Sub
 
 '--- Getters / Setters ---
