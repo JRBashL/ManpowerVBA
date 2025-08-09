@@ -24,10 +24,14 @@ Public Function GetColumnNum(ByVal colLetter As String) As Long
     GetColumnNum = result
 End Function
 
-Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyArray() As String)
+Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyArray() As String, _
+                            Optional ByVal skipProjectsArgument As Variant)
     ' Shorthand worksheets
     Dim wsAlberta As Worksheet
     Dim wsScripting As Worksheet
+
+    ' Variables for skipProjects string array
+    Dim projectsToSkip() As String
 
     ' Variables for the project block class
     Dim startingRow As Integer
@@ -58,13 +62,28 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
     isEndOfList = False
     classListCounter = startingRow
 
+    ' Check if the optional array was provided. If not, uses default. If yes then assigns to local variable
+    If IsMissing(skipProjectsArgument) Then
+        projectsToSkip = Array("Weekly Manpower", "% Billable", "Billable Hours","")
+    ElseIf VarType(skipProjectsArgument) = vbArray + vbString Then
+        projectsToSkip = skipProjectsArgument
+    Else
+        Err.Raise vbObjectError + 1000, "ReadProjectData", "ReadProjectData requires skipProjects argument to be a string array."
+    End If
+        
     ' Main while loop to read the project blocks in the "Alberta" worksheet. Creates a dictionary of projectblocks, using the project name as the key
     ' While Loop stops when it finds 3 consecutive cells to be empty in the next iteration. While loop steps by classListCounter, which is set to the projectblock height
     Do While isEndOfList = False
+
+        projectName = wsAlberta.Cells(classListCounter, 1).Value
+
         If wsAlberta.Cells(classListCounter, 1).Value = "" And wsAlberta.Cells(classListCounter + 1, 1).Value = ""And wsAlberta.Cells(classListCounter + 2).Value = "" Then
             isEndOfList = True
+        ElseIf CheckMatchStringArray(projectName, projectsToSkip) = True Then
+            ' Skips to the next project block if the project name matches any of the elements in the projectsToSkip array.
+            classListCounter = classListCounter + blockHeight
         Else
-            projectName = wsAlberta.Cells(classListCounter, 1).Value
+            
             projectLead = wsAlberta.Cells(classListCounter + 1, 1).Value
             projectNumber = wsAlberta.Cells(classListCounter + 3, 1).Value
             headRow = classListCounter
@@ -157,3 +176,18 @@ Public Function CreateWeekReport(ByVal teamMemberName As String, _
     CreateWeekReport = output
 End Function
 
+' Function compares an input string with all of the elements in the checkArray string array. Returns false if none of the elements match the input string
+Public Function CheckMatchStringArray(ByVal inputString As String, ByRef checkArray() As Variant) As Boolean
+    Dim arrElement As Variant
+
+    ' Loops through each index and compares. If any of the entries in the array is matching, exits function with true
+    For Each arrElement in checkArray
+        If inputString = arrElement Then
+            CheckMatchStringArray = True
+            Exit Function
+        End If
+    Next arrElement
+
+    ' If Function fully completes, i.e. none of the elements in the checkArray matches the input, exits function with false
+    CheckMatchStringArray = False
+End Function
