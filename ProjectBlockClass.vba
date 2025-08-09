@@ -137,5 +137,6 @@ End Function
 Public Sub SetTeamMemberHours(ByVal hours as Variant, ByVal teamMemberName As String, ByVal week as Integer, ByVal team as TeamMembers)
     If Not IsEmpty(v_data) Then
         v_data(team.TeamMembersName(teamMemberName), week) = hours
+        v_ws.Cells(headRow + team.TeamMembersName(teamMemberName), 2 + week).Value = hours
     End If
 End Sub
