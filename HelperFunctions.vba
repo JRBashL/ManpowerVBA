@@ -26,12 +26,16 @@ End Function
 
 Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyArray() As String, _
                             Optional ByVal skipProjectsArgument As Variant)
+    ' Reset projectlist and keyArray for refreshing the data in runtime
+    projectList.RemoveAll
+    Erase keyArray
+    
     ' Shorthand worksheets
     Dim wsAlberta As Worksheet
     Dim wsScripting As Worksheet
 
     ' Variables for skipProjects string array
-    Dim projectsToSkip() As String
+    Dim projectsToSkip() As Variant
 
     ' Variables for the project block class
     Dim startingRow As Integer
@@ -111,13 +115,15 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
 
     ' Print all dictionary entries (keys and values)
     For Each key In projectList.Keys
-        Debug.Print "Key: " & key & " | Value: " & projectList(key).ProjectName  ' or any property you want
+        Debug.Print "Key: " & key & " | Value: " & projectList(key).ProjectName  
     Next key
 
-    ' Print all keys stored in keyArray
+    ' Print all keys stored in keyArray in Immediate window, and also writes to cells in the Worksheets("Scripting")
+    wsScripting.Range("G2:G500").Value = ""
     Dim i As Long
     For i = LBound(keyArray) To UBound(keyArray)
         Debug.Print "keyArray(" & i & "): " & keyArray(i)
+        wsScripting.Cells(i + 1, 7).Value = keyArray(i)
     Next i
 End Sub
 
