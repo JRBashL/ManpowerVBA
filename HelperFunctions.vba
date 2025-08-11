@@ -97,6 +97,10 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
 
             ' Create instance and add to list
             Set project = New ProjectBlockClass
+            
+            If projectList.Exists(projecName) Then
+                projectName = projecName + " DUPLICATE PROJECT"              
+            End if 
             project.Constructor projectName, projectLead, projectNumber, headRow, blockHeight, blockLength, wsAlberta
             projectList.Add project.ProjectName, project
 
