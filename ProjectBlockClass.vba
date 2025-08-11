@@ -70,6 +70,16 @@ Public Property Let HeadRow(ByVal value As Integer)
     OccupyData
 End Property
 
+Public Property Get BlockHeight() As Integer
+    BlockHeight = v_blockHeight
+End Property
+
+Public Property Let BlockHeight(ByVal value As Integer)
+    v_blockHeight = value
+    v_endRow = v_headRow + v_blockHeight - 1
+    OccupyData
+End Property
+
 '--- Example Method ---
 Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
 
