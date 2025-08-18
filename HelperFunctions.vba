@@ -242,3 +242,79 @@ Public Sub LockScriptingSheet()
         wsScripting.Protect Password:=myPassword
     End If
 End Sub
+
+' Sub sorts the project list. First reads project data, removes all projects, sorts the projectskeyarray by alphabetrical order and then adds all projects
+Public Sub SortProjects(ByVal a_team As TeamMembers, ByRef a_projectList As Scripting.Dictionary, team As TeamMembers, _
+                        ByRef a_projectKeyArray() As String, ByVal a_blockLength As Integer, ByVal a_startingRow As Integer)
+    RefreshData
+    UnlockScriptingSheet
+
+    Dim wsScripting As Worksheet, wsTemplate As Worksheet, wsTemplate As Worksheet
+    Dim i As Variant, j As Variant, k As Variant
+    Dim project As Variant
+
+    i = LBound(a_projectKeyArray)
+    j = UBound(a_projectKeyArray)
+    k = a_startingRow
+
+    wsTemplate = Worksheets("Template")
+
+    For each project in a_projectKeyArray
+        project.DeleteProject
+    Loop
+
+    ' Quicksort function on a_projecKeyArray
+    QuickSortAlphabetical(a_projectKeyArray, i, j)
+
+    ' Reapply headrows according to the new sorting
+    For each project in a_projecKeyArray
+        a_projectList(project).HeadRow = k
+        a_projectList(project)AddProjectBlock team, wsTemplate
+        k = k + a_blockLength
+    Loop
+
+    RefreshData
+    LockScriptingSheet
+End Sub
+
+' Quicksort algorithm with Hoare partition 
+Public Sub QuickSortAlphabetical(ByRef a_stringArray() As String, ByVal i As Long, ByVal j As Long)
+    Dim i As Long, j As Long
+    Dim pivot As String
+    Dim temp As String
+
+    ' Create the pivot in the middle of the array. The \ is an integer division and truncates the decimal
+    pivot = a_stringArray((i + j) \ 2
+
+    ' Partition Loop. Outer loop continues until the indeces end up in the middle (i = j) and the < is just to make sure 
+    Do While i <= j
+        ' Sub loop starts from the lower bound of the string and compares each to the pivot. The loop stops if it finds one that is greater than
+        ' The pivot. Greater than the pivot means it's alphabatically later
+        Do While StrComp(a_stringArray(i), pivot, vbTextCompare) < 0
+            i = i + 1
+        Loop
+        ' Sub loop starts from the upper bound of the string and compares each to the pivot. The loop stops if it finds one that is less than
+        ' The pivot. Less than the pivot means it's alphabatically earlier
+        Do While StrComp(a_stringArray(j, pivot, vbTextCompare)) > 0
+            j = j - 1
+        Loop
+        ' If statement to run if the indeces are not in the middle. If so, then the array element marked for swapping (where the sub loops stopped)
+        ' are swapped with each other. This uses one temp variable to store the value in while swapping
+        If i <= j Then
+            temp = a_stringArray(i)
+            a_stringArray(i) = a_stringArray(j)
+            a_stringArray(j) = temp
+            ' Shift the indeces to avoid infinite loops in the next outer loop
+            i = i + 1
+            j = j + 1
+        End If
+    Loop
+
+    ' Recursion for the left and right sub-arrays
+    If first < j Then
+        QuickSortAlphabetical a_stringArray, first, j
+    End If
+    If i < last Then
+        QuickSortAlphabetical a_stringArray, i, last
+    End If
+End Sub
