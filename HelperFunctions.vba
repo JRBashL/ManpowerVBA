@@ -244,8 +244,11 @@ Public Sub LockScriptingSheet()
 End Sub
 
 ' Sub sorts the project list. First reads project data, removes all projects, sorts the projectskeyarray by alphabetrical order and then adds all projects
-Public Sub SortProjects(ByVal a_team As TeamMembers, ByRef a_projectList As Scripting.Dictionary, team As TeamMembers, _
-                        ByRef a_projectKeyArray() As String, ByVal a_blockLength As Integer, ByVal a_startingRow As Integer)
+Public Sub SortProjects(ByVal a_team As TeamMembers, _
+                        ByRef a_projectList As Scripting.Dictionary, _
+                        ByRef a_projectKeyArray() As String, _
+                        ByVal a_blockLength As Integer, _
+                        ByVal a_startingRow As Integer)
     RefreshData
     UnlockScriptingSheet
 
@@ -266,14 +269,13 @@ Public Sub SortProjects(ByVal a_team As TeamMembers, ByRef a_projectList As Scri
     ' Quicksort function on a_projecKeyArray
     QuickSortAlphabetical(a_projectKeyArray, i, j)
 
-    ' Reapply headrows according to the new sorting
+    ' Reapply headrows according to the new sorting and adds project to the list
     For each project in a_projecKeyArray
         a_projectList(project).HeadRow = k
         a_projectList(project)AddProjectBlock team, wsTemplate
         k = k + a_blockLength
     Loop
-
-    RefreshData
+    
     LockScriptingSheet
 End Sub
 
