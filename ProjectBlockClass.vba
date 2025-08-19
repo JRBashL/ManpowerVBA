@@ -78,8 +78,12 @@ Public Property Let BlockHeight(ByVal value As Integer)
     v_endRow = v_headRow + v_blockHeight - 1
 End Property
 
-'--- Example Method ---
+' Add project block method to insert the project block onto a worksheet
 Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
+
+    'Comment out for debugging
+    Dim v_ws As Worksheet
+    Set v_ws = Workshets("Test")
 
     ' Insert Rows
     Dim i as Integer
