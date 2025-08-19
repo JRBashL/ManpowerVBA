@@ -88,7 +88,7 @@ Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
         Debug.Print v_headRow
     Next i
 
-    OccupyData
+    InsertData
 
     ' Populate Project Name and Project Number
     v_ws.Cells(v_headRow, "A").Value = v_projectName
@@ -122,11 +122,7 @@ End Sub
 
 Public Sub DeleteProject()
     Dim deleteRange as Range
-    Dim v_ws As Worksheet
-
-    Set v_ws = Worksheets("Test")
     Set deleteRange = v_ws.Range("A" & v_headRow & ":A" & v_endRow)
-
     deleteRange.EntireRow.Delete
 End Sub
 
