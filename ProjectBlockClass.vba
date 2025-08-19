@@ -67,7 +67,6 @@ End Property
 Public Property Let HeadRow(ByVal value As Integer)
     v_headRow = value
     v_endRow = v_headRow + v_blockHeight - 1
-    OccupyData
 End Property
 
 Public Property Get BlockHeight() As Integer
@@ -77,7 +76,6 @@ End Property
 Public Property Let BlockHeight(ByVal value As Integer)
     v_blockHeight = value
     v_endRow = v_headRow + v_blockHeight - 1
-    OccupyData
 End Property
 
 '--- Example Method ---
