@@ -7,7 +7,9 @@ Option Explicit
 Private v_projectName As String
 Private v_teamLead As String
 Private v_projectNumber As Variant
-Private v_projectStatus As Variant
+Private v_projectStatus As Variant ' Need to add to cosntructor method
+Private v_mainNotes As String ' Need to add to constructor method
+Private v_notes() As String ' Need to add to constructor method
 Private v_headRow As Integer
 Private v_endRow As Integer
 Private v_blockHeight As Integer
@@ -107,6 +109,18 @@ Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
     v_ws.Cells(v_headRow, "A").Value = v_projectName
     v_ws.Cells(v_headRow + 1, 1).Value = v_teamLead
     v_ws.Cells(v_headRow + 2, 1).Value = v_projectNumber
+    
+    ' Create data validation for the cells for project status. The data validation range is hardcoded 
+    With v_ws.Cells(v_headRow + 5).Validation
+        .Add Type:=xlValidateList, _
+            AlertStyle:=xlValidAlerStop, _ 
+            Operator:=xlEqual, _ 
+            Formula1:="=" & Worksheets("List").Range("A1:A100").Address(External:=True)
+        .IgnoreBlank = False
+        .InCellDropDown = False
+        .ShowInput = True
+        .ShowError = True
+    End With
 
     ' Populate Team 
     v_ws.Cells(v_headRow, 2).Value = "*"
