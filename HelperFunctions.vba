@@ -98,8 +98,8 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
             ' Create instance and add to list
             Set project = New ProjectBlockClass
             
-            If projectList.Exists(projecName) Then
-                projectName = projecName + " DUPLICATE PROJECT"              
+            If projectList.Exists(projectName) Then
+                projectName = projectName + " DUPLICATE PROJECT"              
             End if 
             project.Constructor projectName, projectLead, projectNumber, headRow, blockHeight, blockLength, wsAlberta
             projectList.Add project.ProjectName, project
@@ -267,15 +267,15 @@ Public Sub SortProjects(ByVal a_team As TeamMembers, _
     Loop
 
     ' Quicksort function on a_projecKeyArray
-    QuickSortAlphabetical(a_projectKeyArray, i, j)
+    QuickSortAlphabetical a_projectKeyArray, i, j
 
     ' Reapply headrows according to the new sorting and adds project to the list
     For each project in a_projecKeyArray
         a_projectList(project).HeadRow = k
-        a_projectList(project)AddProjectBlock team, wsTemplate
+        a_projectList(project).AddProjectBlock team, wsTemplate
         k = k + a_blockLength
     Loop
-    
+
     LockScriptingSheet
 End Sub
 
@@ -297,7 +297,7 @@ Public Sub QuickSortAlphabetical(ByRef a_stringArray() As String, ByVal i As Lon
         Loop
         ' Sub loop starts from the upper bound of the string and compares each to the pivot. The loop stops if it finds one that is less than
         ' The pivot. Less than the pivot means it's alphabatically earlier
-        Do While StrComp(a_stringArray(j, pivot, vbTextCompare)) > 0
+        Do While StrComp(a_stringArray(j), pivot, vbTextCompare) > 0
             j = j - 1
         Loop
         ' If statement to run if the indeces are not in the middle. If so, then the array element marked for swapping (where the sub loops stopped)

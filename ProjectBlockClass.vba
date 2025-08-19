@@ -22,7 +22,7 @@ Public Sub Constructor(ByVal projectName As String, _
                         ByVal headRow as Integer, _
                         ByVal blockHeight As Integer, _
                         ByVal blockLength As Integer, _
-                        ByVal worksheet As Worksheets)
+                        ByVal worksheet As Worksheet)
     v_projectName = projectName
     v_teamLead = teamLead
     v_projectNumber = projectNumber
