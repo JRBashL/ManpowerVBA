@@ -132,10 +132,30 @@ Public Sub DeleteProject()
     deleteRange.EntireRow.Delete
 End Sub
 
-Public Sub OccupyData
+Public Sub OccupyData()
     ' Occupy data. v_headRow + 1 is to match TeamMembers index starting at the 2nd row of the project block. v_blocklength - 1 is to remove
     ' the column at the end which is a summation 
     v_data = v_ws.Range("C" & (v_headRow + 1) & ":" & GetColumnLetter(v_blockLength - 1) & v_endRow)
+End Sub
+
+Public Sub InsertData()
+    Dim i As Long, j As Long
+
+    ' Outer if statement checks if v_data 2D array has been made. If so then writes it to cell. If not then writes blanks
+    If IsArray(v_data) And Not IsEmpty(v_data) Then
+        For i = LBound(v_data, 1) to UBound(v_data, 1)
+            For j = LBound(v_data, 2) to UBound(v_data, 2)
+                v_ws.Cells(v_headrow + i, GetColumnNum("C") + j - 1).Value = v_data(i,j).
+            Next j
+        Next i
+    Else
+        For i = LBound(v_data, 1) to UBound(v_data, 1)
+            For j = LBound(v_data, 2) to UBound(v_data, 2)
+                v_ws.Cells(v_headrow + i, GetColumnNum("C") + j - 1).Value = ""
+            Next j
+        Next i
+        OccupyData
+    End If
 End Sub
 
 Public Function GetTeamMemberHours(ByVal teamMemberName As String, ByVal week as Integer, ByVal team as TeamMembers) As Integer
