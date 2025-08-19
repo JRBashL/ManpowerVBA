@@ -7,6 +7,7 @@ Option Explicit
 Private v_projectName As String
 Private v_teamLead As String
 Private v_projectNumber As Variant
+Private v_projectStatus As Variant
 Private v_headRow As Integer
 Private v_endRow As Integer
 Private v_blockHeight As Integer
@@ -58,6 +59,14 @@ End Property
 
 Public Property Let ProjectNumber(ByVal value as Variant)
     v_projectNumber = value
+End Property
+
+Public Property Get ProjectStatus() As String
+    ProjectStatus = v_projectStatus
+End Property
+
+Public Property Let ProjectStatus(ByVal value As String)
+    v_projectStatus = value
 End Property
 
 Public Property Get HeadRow() As Integer
