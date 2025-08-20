@@ -7,9 +7,9 @@ Option Explicit
 Private v_projectName As String
 Private v_teamLead As String
 Private v_projectNumber As Variant
-Private v_projectStatus As Variant ' Need to add to cosntructor method
-Private v_mainNotes As String ' Need to add to constructor method
-Private v_notes() As String ' Need to add to constructor method
+Private v_projectStatus As Variant 
+Private v_mainNotes As String
+Private v_notes(1 To 13) As String
 Private v_headRow As Integer
 Private v_endRow As Integer
 Private v_blockHeight As Integer
@@ -19,22 +19,39 @@ Private v_data As Variant
 Private v_ws As Worksheet
 
 '--- Constructor-like method ---
-Public Sub Constructor(ByVal projectName As String, _
-                        ByVal teamLead As String, _
-                        ByVal projectNumber as Variant, _
-                        ByVal headRow as Integer, _
-                        ByVal blockHeight As Integer, _
-                        ByVal blockLength As Integer, _
-                        ByVal worksheet As Worksheet)
-    v_projectName = projectName
-    v_teamLead = teamLead
-    v_projectNumber = projectNumber
-    v_headRow = headRow
-    v_blockHeight = blockHeight
-    v_endRow = headRow + blockHeight - 1
-    v_blockLength = blockLength
-    v_endColLetter = GetColumnLetter(blockLength)
-    Set v_ws = worksheet
+Public Sub Constructor(ByVal a_projectName As String, _
+                        ByVal a_teamLead As String, _
+                        ByVal a_projectStatus As String, _
+                        ByVal a_mainNotes As String, _
+                        ByVal a_notes() As String, _
+                        ByVal a_projectNumber as Variant, _
+                        ByVal a_headRow as Integer, _
+                        ByVal a_blockHeight As Integer, _
+                        ByVal a_blockLength As Integer, _
+                        ByVal a_worksheet As Worksheet)
+    Dim i As Long
+    
+    v_projectName = a_projectName
+    v_teamLead = a_teamLead
+    v_projectStatus = a_projectStatus
+    v_mainNotes = a_mainNotes
+
+    'Setting notes array 
+    If LBound(a_notes) <> 1 Or UBound(a_notes) <> 13 Then
+        Err.Raise vbObjectError + 1000, , "a_notes must be an array with 13 elements"
+    Else
+        For i = 1 To 13
+            v_notes(i) = a_notes(i)
+        Next i
+    End If
+
+    v_projectNumber = a_projectNumber
+    v_headRow = a_headRow
+    v_blockHeight = a_blockHeight
+    v_endRow = a_headRow + a_blockHeight - 1
+    v_blockLength = a_blockLength
+    v_endColLetter = GetColumnLetter(a_blockLength)
+    Set v_ws = a_worksheet
     OccupyData
 End Sub
 
@@ -55,20 +72,36 @@ Public Property Let TeamLead(ByVal value As String)
     v_teamLead = value
 End Property
 
-Public Property Get ProjectNumber() As Variant
-    ProjectNumber = v_projectNumber
-End Property
-
-Public Property Let ProjectNumber(ByVal value as Variant)
-    v_projectNumber = value
-End Property
-
 Public Property Get ProjectStatus() As String
     ProjectStatus = v_projectStatus
 End Property
 
 Public Property Let ProjectStatus(ByVal value As String)
     v_projectStatus = value
+End Property
+
+Public Property Get ProjectNumber() As Variant
+    ProjectNumber = v_projectNumber
+End Property
+
+Public Property Get MainNotes() As String
+    MainNotes = v_mainNotes
+End Property
+
+Public Property Let MainNotes(value As String)
+    v_mainNotes = value
+End Property
+
+Public Property Get Notes(ByVal index As Integer) As String
+    Notes = v_notes(index)
+End Property
+
+Public Property Let Notes(ByVal index As Integer, value As String) 
+    v_notes(index) = value
+End Property
+
+Public Property Let ProjectNumber(ByVal value as Variant)
+    v_projectNumber = value
 End Property
 
 Public Property Get HeadRow() As Integer
@@ -105,10 +138,14 @@ Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
 
     InsertData
 
-    ' Populate Project Name and Project Number
+    ' Populate all items on the left block: Project Name, tead lead, project number, main notes, notes
     v_ws.Cells(v_headRow, "A").Value = v_projectName
     v_ws.Cells(v_headRow + 1, 1).Value = v_teamLead
     v_ws.Cells(v_headRow + 2, 1).Value = v_projectNumber
+    v_ws.Cells(v_headRow + 3, 1).Value = v_mainNotes
+    For i = 1 To 13
+        v_ws.Cells(v_headRow + 7 + i).Value = v_notes(i)
+    Next i
     
     ' Create data validation for the cells for project status. The data validation range is hardcoded 
     With v_ws.Cells(v_headRow + 5).Validation
@@ -191,3 +228,35 @@ Public Sub SetTeamMemberHours(ByVal hours as Variant, ByVal teamMemberName As St
         v_ws.Cells(headRow + team.TeamMembersName(teamMemberName), 2 + week).Value = hours
     End If
 End Sub
+
+' Assume v_notes(1 To 13) is declared at the class level
+
+' === Getter Methods ===
+Public Function GetNotes1() As String: GetNotes1 = v_notes(1): End Function
+Public Function GetNotes2() As String: GetNotes2 = v_notes(2): End Function
+Public Function GetNotes3() As String: GetNotes3 = v_notes(3): End Function
+Public Function GetNotes4() As String: GetNotes4 = v_notes(4): End Function
+Public Function GetNotes5() As String: GetNotes5 = v_notes(5): End Function
+Public Function GetNotes6() As String: GetNotes6 = v_notes(6): End Function
+Public Function GetNotes7() As String: GetNotes7 = v_notes(7): End Function
+Public Function GetNotes8() As String: GetNotes8 = v_notes(8): End Function
+Public Function GetNotes9() As String: GetNotes9 = v_notes(9): End Function
+Public Function GetNotes10() As String: GetNotes10 = v_notes(10): End Function
+Public Function GetNotes11() As String: GetNotes11 = v_notes(11): End Function
+Public Function GetNotes12() As String: GetNotes12 = v_notes(12): End Function
+Public Function GetNotes13() As String: GetNotes13 = v_notes(13): End Function
+
+' === Setter Methods ===
+Public Sub SetNotes1(value As String): v_notes(1) = value: End Sub
+Public Sub SetNotes2(value As String): v_notes(2) = value: End Sub
+Public Sub SetNotes3(value As String): v_notes(3) = value: End Sub
+Public Sub SetNotes4(value As String): v_notes(4) = value: End Sub
+Public Sub SetNotes5(value As String): v_notes(5) = value: End Sub
+Public Sub SetNotes6(value As String): v_notes(6) = value: End Sub
+Public Sub SetNotes7(value As String): v_notes(7) = value: End Sub
+Public Sub SetNotes8(value As String): v_notes(8) = value: End Sub
+Public Sub SetNotes9(value As String): v_notes(9) = value: End Sub
+Public Sub SetNotes10(value As String): v_notes(10) = value: End Sub
+Public Sub SetNotes11(value As String): v_notes(11) = value: End Sub
+Public Sub SetNotes12(value As String): v_notes(12) = value: End Sub
+Public Sub SetNotes13(value As String): v_notes(13) = value: End Sub
