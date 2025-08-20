@@ -45,6 +45,9 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
     Dim headRow As Integer
     Dim projectName As String
     Dim projectLead As String
+    Dim projectStatus As String
+    Dim mainNotes As String
+    Dim notes(1 To 13) As String
     Dim projectNumber As Variant
     Dim project As ProjectBlockClass
 
@@ -54,6 +57,7 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
     Dim isEndOfList As Boolean
     Dim arrayCounter As Integer
     Dim key As Variant
+    Dim entry As Variant
 
     Set wsAlberta = Worksheets("Alberta")
     Set wsScripting = Worksheets("Scripting")
@@ -89,7 +93,12 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
         Else
             
             projectLead = wsAlberta.Cells(classListCounter + 1, 1).Value
-            projectNumber = wsAlberta.Cells(classListCounter + 3, 1).Value
+            projectStatus = wsAlberta.Cells(classListCounter + 5).Value
+            mainNotes = wsAlberta.Cells(classListCounter + 3).Value
+            projectNumber = wsAlberta.Cells(classListCounter + 2, 1).Value
+            For i = 1 To 13
+                notes(i) = wsAberta.Cells(classListCounter + 7 + i).Value
+            Next i
             headRow = classListCounter
             ' blockheight already defined
             ' blocklength defined
@@ -101,7 +110,7 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
             If projectList.Exists(projectName) Then
                 projectName = projectName + " DUPLICATE PROJECT"              
             End if 
-            project.Constructor projectName, projectLead, projectNumber, headRow, blockHeight, blockLength, wsAlberta
+            project.Constructor projectName, projectLead, projectStatus, mainNotes, notes, projectNumber, headRow, blockHeight, blockLength, wsAlberta
             projectList.Add project.ProjectName, project
 
             'Next iteration to jump to the next headrow of the next projectblock
