@@ -23,7 +23,7 @@ Public Sub Constructor(ByVal a_projectName As String, _
                         ByVal a_teamLead As String, _
                         ByVal a_projectStatus As String, _
                         ByVal a_mainNotes As String, _
-                        ByVal a_notes() As String, _
+                        ByRef a_notes() As String, _
                         ByVal a_projectNumber as Variant, _
                         ByVal a_headRow as Integer, _
                         ByVal a_blockHeight As Integer, _
@@ -125,9 +125,9 @@ End Property
 ' Add project block method to insert the project block onto a worksheet
 Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
 
-    'Comment out for debugging
+    'Comment out. For debugging
     Dim v_ws As Worksheet
-    Set v_ws = Workshets("Test")
+    Set v_ws = Worksheets("Test")
 
     ' Insert Rows
     Dim i as Integer
@@ -143,26 +143,37 @@ Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
     v_ws.Cells(v_headRow + 1, 1).Value = v_teamLead
     v_ws.Cells(v_headRow + 2, 1).Value = v_projectNumber
     v_ws.Cells(v_headRow + 3, 1).Value = v_mainNotes
+    v_ws.Cells(V_headRow + 4, 1).Value = "Project Status:"
     For i = 1 To 13
-        v_ws.Cells(v_headRow + 7 + i).Value = v_notes(i)
+        v_ws.Cells(v_headRow + 7 + i, 1).Value = v_notes(i)
     Next i
     
-    ' Create data validation for the cells for project status. The data validation range is hardcoded 
-    With v_ws.Cells(v_headRow + 5).Validation
+    ' Create data validation for the cells for project status. The data validation range is hardcoded from 1:100 on a worksheet called "List"
+    With v_ws.Cells(v_headRow + 5, 1).Validation
+        .Delete
         .Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlerStop, _ 
-            Operator:=xlEqual, _ 
-            Formula1:="=" & Worksheets("List").Range("A1:A100").Address(External:=True)
+            AlertStyle:=xlValidAlertStop, _
+            Operator:=xlEqual, _
+            Formula1:="=List!A1:A100"
         .IgnoreBlank = False
-        .InCellDropDown = False
+        .InCellDropdown = True
         .ShowInput = True
         .ShowError = True
     End With
+
+    ' Add project status
+    v_ws.Cells(v_headRow + 5, 1).Value = v_projectStatus
 
     ' Populate Team 
     v_ws.Cells(v_headRow, 2).Value = "*"
     For i = 1 to v_blockHeight - 1
         v_ws.Cells(v_headRow + i, 2).Value = team.TeamMembersNum(i)
+    Next i
+
+    ' Add sum formulas on the last column of the project block
+    For i = 1 to v_blockHeight
+        v_ws.Cells(v_headRow + i, v_blockLength).Formula = _
+            "=SUM(C" & (v_headRow + i) & ":" & GetColumnLetter(v_blockLength - 1) & (v_headRow + i) & ")"
     Next i
 
     ' Formatting Copy/Paste from Template
@@ -199,11 +210,18 @@ End Sub
 Public Sub InsertData()
     Dim i As Long, j As Long
 
+    ' For Debugging
+    Set v_ws = Worksheets("Test")
+
     ' Outer if statement checks if v_data 2D array has been made. If so then writes it to cell. If not then writes blanks
     If IsArray(v_data) And Not IsEmpty(v_data) Then
         For i = LBound(v_data, 1) to UBound(v_data, 1)
             For j = LBound(v_data, 2) to UBound(v_data, 2)
-                v_ws.Cells(v_headrow + i, GetColumnNum("C") + j - 1).Value = v_data(i,j).
+                If v_data(i,j) = 0 Then
+                    v_ws.Cells(v_headrow + i, GetColumnNum("C") + j - 1).Value = ""
+                Else
+                    v_ws.Cells(v_headrow + i, GetColumnNum("C") + j - 1).Value = v_data(i,j)
+                End If
             Next j
         Next i
     Else

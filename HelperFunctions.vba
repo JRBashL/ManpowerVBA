@@ -58,10 +58,12 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
     Dim arrayCounter As Integer
     Dim key As Variant
     Dim entry As Variant
+    Dim i As Variant
 
     Set wsAlberta = Worksheets("Alberta")
     Set wsScripting = Worksheets("Scripting")
 
+    ' Read important variables off the scripting worksheet
     startingRow = wsScripting.Range("B5").Value
     teamMembersQuantity = wsScripting.Range("B2").Value
     blockHeight = wsScripting.Range("B3").Value
@@ -91,13 +93,12 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
             ' Skips to the next project block if the project name matches any of the elements in the projectsToSkip array.
             classListCounter = classListCounter + blockHeight
         Else
-            
             projectLead = wsAlberta.Cells(classListCounter + 1, 1).Value
-            projectStatus = wsAlberta.Cells(classListCounter + 5).Value
-            mainNotes = wsAlberta.Cells(classListCounter + 3).Value
+            projectStatus = wsAlberta.Cells(classListCounter + 5, 1).Value
+            mainNotes = wsAlberta.Cells(classListCounter + 3, 1).Value
             projectNumber = wsAlberta.Cells(classListCounter + 2, 1).Value
             For i = 1 To 13
-                notes(i) = wsAberta.Cells(classListCounter + 7 + i).Value
+                notes(i) = wsAlberta.Cells(classListCounter + 7 + i, 1).Value
             Next i
             headRow = classListCounter
             ' blockheight already defined
@@ -133,7 +134,6 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
 
     ' Print all keys stored in keyArray in Immediate window, and also writes to cells in the Worksheets("Scripting")
     wsScripting.Range("G2:G500").Value = ""
-    Dim i As Long
     For i = LBound(keyArray) To UBound(keyArray)
         Debug.Print "keyArray(" & i & "): " & keyArray(i)
         wsScripting.Cells(i + 1, 7).Value = keyArray(i)
