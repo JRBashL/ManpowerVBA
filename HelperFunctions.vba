@@ -256,12 +256,12 @@ End Sub
 Public Sub SortProjects(ByVal a_team As TeamMembers, _
                         ByRef a_projectList As Scripting.Dictionary, _
                         ByRef a_projectKeyArray() As String, _
-                        ByVal a_blockLength As Integer, _
+                        ByVal a_blockHeight As Integer, _
                         ByVal a_startingRow As Integer)
     RefreshData
     UnlockScriptingSheet
 
-    Dim wsScripting As Worksheet, wsTemplate As Worksheet, wsTemplate As Worksheet
+    Dim wsScripting As Worksheet, wsTemplate As Worksheet
     Dim i As Variant, j As Variant, k As Variant
     Dim project As Variant
 
@@ -269,33 +269,36 @@ Public Sub SortProjects(ByVal a_team As TeamMembers, _
     j = UBound(a_projectKeyArray)
     k = a_startingRow
 
-    wsTemplate = Worksheets("Template")
+    Set wsTemplate = Worksheets("Template")
 
-    For each project in a_projectKeyArray
-        project.DeleteProject
-    Loop
+    'For each project in a_projectKeyArray
+   '     project.DeleteProject
+    'Loop
 
     ' Quicksort function on a_projecKeyArray
     QuickSortAlphabetical a_projectKeyArray, i, j
 
     ' Reapply headrows according to the new sorting and adds project to the list
-    For each project in a_projecKeyArray
+    For each project in a_projectKeyArray
         a_projectList(project).HeadRow = k
         a_projectList(project).AddProjectBlock team, wsTemplate
-        k = k + a_blockLength
-    Loop
+        k = k + a_blockHeight
+    Next project
 
     LockScriptingSheet
 End Sub
 
 ' Quicksort algorithm with Hoare partition 
 Public Sub QuickSortAlphabetical(ByRef a_stringArray() As String, ByVal i As Long, ByVal j As Long)
-    Dim i As Long, j As Long
+    Dim first As Long, last As Long
     Dim pivot As String
     Dim temp As String
 
+    first = i
+    last = j
+
     ' Create the pivot in the middle of the array. The \ is an integer division and truncates the decimal
-    pivot = a_stringArray((i + j) \ 2
+    pivot = a_stringArray((i + j) \ 2)
 
     ' Partition Loop. Outer loop continues until the indeces end up in the middle (i = j) and the < is just to make sure 
     Do While i <= j
@@ -317,7 +320,7 @@ Public Sub QuickSortAlphabetical(ByRef a_stringArray() As String, ByVal i As Lon
             a_stringArray(j) = temp
             ' Shift the indeces to avoid infinite loops in the next outer loop
             i = i + 1
-            j = j + 1
+            j = j - 1
         End If
     Loop
 
