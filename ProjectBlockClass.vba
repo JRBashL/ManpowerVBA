@@ -24,7 +24,7 @@ Public Sub Constructor( ByVal a_projectName As String, _
                         ByVal a_teamLead As String, _
                         ByVal a_projectStatus As String, _
                         ByVal a_mainNotes As String, _
-                        ByRef a_notes() As String, _
+                        ByRef a_notes() As Variant, _
                         ByVal a_projectNumber as Variant, _
                         ByVal a_headRow as Integer, _
                         ByVal a_blockHeight As Integer, _
@@ -62,7 +62,6 @@ Public Sub Constructor( ByVal a_projectName As String, _
         Err.Raise vbObjectError + 1000, , "a_notes must be an array with " & noteCount & " elements."
     Else
         ReDim v_notes(1 To noteCount)
-        Dim i As Long
         For i = 1 To noteCount
             v_notes(i) = a_notes(i)
         Next i

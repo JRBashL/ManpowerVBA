@@ -4,19 +4,27 @@ Public TestProject As ProjectBlockClass
 
 Public Projects As New Scripting.Dictionary
 Public ProjectKeyArray() As String
+Public SpecialProjects() As Variant
+
+Public Sub InitSpecialProjects()
+    SpecialProjects = Array("AWW", "G&A -Admin", "Vacation", "Stat", "Training", "Business Development and Marketing", _
+                            "BLANK TEMPLATE (Mechanical Lead)", "PENDING PROJECTS - YEG & YYC", "PENDING PROJECTS - YYZ")
+End Sub
 
 Sub RefreshData()
     UnlockScriptingSheet
     Set team = New TeamMembers
     team.Constructor
-    ReadProjectData Projects, ProjectKeyArray
+    InitSpecialProjects
+    ReadProjectData Projects, ProjectKeyArray, SpecialProjects
 End Sub
 
 Sub RefreshDataButton()
     UnlockScriptingSheet
     Set team = New TeamMembers
     team.Constructor
-    ReadProjectData Projects, ProjectKeyArray
+    InitSpecialProjects
+    ReadProjectData Projects, ProjectKeyArray, SpecialProjects
     LockScriptingSheet
 End Sub
 

@@ -25,7 +25,7 @@ Public Function GetColumnNum(ByVal colLetter As String) As Long
 End Function
 
 Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyArray() As String, _
-                            ByVal a_specialProjects() As String, _
+                            ByRef a_specialProjects() As Variant, _
                             Optional ByVal skipProjectsArgument As Variant)
     ' Reset projectlist and keyArray for refreshing the data in runtime
     projectList.RemoveAll
