@@ -152,6 +152,8 @@ Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
     Dim v_ws As Worksheet
     Set v_ws = Worksheets("Test")
 
+    Dim offsetforSpecialProjects as Long
+
     ' Insert Rows
     Dim i as Integer
     For i = 1 to v_blockHeight 
@@ -163,29 +165,38 @@ Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
 
     ' Populate all items on the left block: Project Name, tead lead, project number, main notes, notes
     v_ws.Cells(v_headRow, "A").Value = v_projectName
-    v_ws.Cells(v_headRow + 1, 1).Value = v_teamLead
     v_ws.Cells(v_headRow + 2, 1).Value = v_projectNumber
-    v_ws.Cells(v_headRow + 3, 1).Value = v_mainNotes
-    v_ws.Cells(V_headRow + 4, 1).Value = "Project Status:"
-    For i = 1 To 13
-        v_ws.Cells(v_headRow + 7 + i, 1).Value = v_notes(i)
-    Next i
-    
-    ' Create data validation for the cells for project status. The data validation range is hardcoded from 1:100 on a worksheet called "List"
-    With v_ws.Cells(v_headRow + 5, 1).Validation
-        .Delete
-        .Add Type:=xlValidateList, _
-            AlertStyle:=xlValidAlertStop, _
-            Operator:=xlEqual, _
-            Formula1:="=List!A1:A100"
-        .IgnoreBlank = False
-        .InCellDropdown = True
-        .ShowInput = True
-        .ShowError = True
-    End With
 
-    ' Add project status
-    v_ws.Cells(v_headRow + 5, 1).Value = v_projectStatus
+    If v_isSpecialProject = True Then
+        offsetforSpecialProjects = 2
+    Else
+        offsetforSpecialProjects = 7
+
+        v_ws.Cells(v_headRow + 1, 1).Value = v_teamLead
+        v_ws.Cells(v_headRow + 3, 1).Value = v_mainNotes
+        v_ws.Cells(V_headRow + 4, 1).Value = "Project Status:"
+
+        ' Create data validation for the cells for project status. The data validation range is hardcoded from 1:100 on a worksheet called "List"
+        With v_ws.Cells(v_headRow + 5, 1).Validation
+            .Delete
+            .Add Type:=xlValidateList, _
+                AlertStyle:=xlValidAlertStop, _
+                Operator:=xlEqual, _
+                Formula1:="=List!A1:A100"
+            .IgnoreBlank = False
+            .InCellDropdown = True
+            .ShowInput = True
+            .ShowError = True
+        End With   
+
+        ' Add project status
+        v_ws.Cells(v_headRow + 5, 1).Value = v_projectStatus
+    End If
+
+    ' Add notes
+    For i = 1 To UBound(v_notes)
+        v_ws.Cells(v_headRow + offsetforSpecialProjects + i, 1).Value = v_notes(i)
+    Next i
 
     ' Populate Team 
     v_ws.Cells(v_headRow, 2).Value = "*"
@@ -202,7 +213,15 @@ Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
     ' Formatting Copy/Paste from Template
     Dim templateRange As Range
     Dim desRange As Range
-    Set templateRange = Worksheets(templateSheet).Range("A1:" & v_endColLetter & v_blockLength)
+    Dim startTemplateCell As String
+
+    If v_isSpecialProject = True Then
+        startTemplateCell = 23
+    Else
+        startTemplateCell = 1
+    EndIf
+
+    Set templateRange = Worksheets(templateSheet).Range("A" & startTemplateCell & ":" & GetColumnLetter(v_blockLength) & (startTemplateCell + v_blockHeight))
     Set desRange = v_ws.Range("A" & v_headRow & ":" & v_endColLetter & v_endRow)
     templateRange.Copy
     desRange.PasteSpecial xlPasteFormats
