@@ -4,12 +4,13 @@
 Option Explicit
 
 '--- Properties ---
+Private v_isSpecialProject As Boolean
 Private v_projectName As String
 Private v_teamLead As String
 Private v_projectNumber As Variant
 Private v_projectStatus As Variant 
 Private v_mainNotes As String
-Private v_notes(1 To 13) As String
+Private v_notes As Variant
 Private v_headRow As Integer
 Private v_endRow As Integer
 Private v_blockHeight As Integer
@@ -19,7 +20,7 @@ Private v_data As Variant
 Private v_ws As Worksheet
 
 '--- Constructor-like method ---
-Public Sub Constructor(ByVal a_projectName As String, _
+Public Sub Constructor( ByVal a_projectName As String, _
                         ByVal a_teamLead As String, _
                         ByVal a_projectStatus As String, _
                         ByVal a_mainNotes As String, _
@@ -28,30 +29,44 @@ Public Sub Constructor(ByVal a_projectName As String, _
                         ByVal a_headRow as Integer, _
                         ByVal a_blockHeight As Integer, _
                         ByVal a_blockLength As Integer, _
-                        ByVal a_worksheet As Worksheet)
+                        ByVal a_worksheet As Worksheet, _
+                        Optional ByVal a_isSpecialProject As Boolean = False)
     Dim i As Long
-    
-    v_projectName = a_projectName
-    v_teamLead = a_teamLead
-    v_projectStatus = a_projectStatus
-    v_mainNotes = a_mainNotes
+    Dim noteCount As Long
 
-    'Setting notes array 
-    If LBound(a_notes) <> 1 Or UBound(a_notes) <> 13 Then
-        Err.Raise vbObjectError + 1000, , "a_notes must be an array with 13 elements"
+    v_projectName = a_projectName
+    v_projectNumber = a_projectNumber
+    v_headRow = a_headRow
+    v_endRow = a_headRow + a_blockHeight - 1
+    v_blockLength = a_blockLength
+    v_endColLetter = GetColumnLetter(a_blockLength)
+    v_blockHeight = a_blockHeight
+    Set v_ws = a_worksheet
+
+    v_isSpecialProject = a_isSpecialProject
+
+    If v_isSpecialProject Then
+        v_teamLead = "N/A"
+        v_projectStatus = "N/A"
+        v_mainNotes = "N/A"
+        noteCount = blockHeight - 3
     Else
-        For i = 1 To 13
+        v_teamLead = a_teamLead
+        v_projectStatus = a_projectStatus
+        v_mainNotes = a_mainNotes
+        noteCount = blockHeight - 8
+    End If
+
+    If LBound(a_notes) <> 1 Or UBound(a_notes) <> noteCount Then
+        Err.Raise vbObjectError + 1000, , "a_notes must be an array with " & noteCount & " elements."
+    Else
+        ReDim v_notes(1 To noteCount)
+        Dim i As Long
+        For i = 1 To noteCount
             v_notes(i) = a_notes(i)
         Next i
     End If
 
-    v_projectNumber = a_projectNumber
-    v_headRow = a_headRow
-    v_blockHeight = a_blockHeight
-    v_endRow = a_headRow + a_blockHeight - 1
-    v_blockLength = a_blockLength
-    v_endColLetter = GetColumnLetter(a_blockLength)
-    Set v_ws = a_worksheet
     OccupyData
 End Sub
 
@@ -120,6 +135,14 @@ End Property
 Public Property Let BlockHeight(ByVal value As Integer)
     v_blockHeight = value
     v_endRow = v_headRow + v_blockHeight - 1
+End Property
+
+Public Property Get IsSpecialProject() As Boolean
+    IsSpecialProject = v_isSpecialProject
+End Property
+
+Public Property Let IsSpecialProject(value As Boolean)
+    v_isSpecialProject = value
 End Property
 
 ' Add project block method to insert the project block onto a worksheet
