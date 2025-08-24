@@ -261,28 +261,72 @@ Public Sub SortProjects(ByVal a_team As TeamMembers, _
     RefreshData
     UnlockScriptingSheet
 
-    Dim wsScripting As Worksheet, wsTemplate As Worksheet
+    'Declare worksheets
+    Dim wsTemplate As Worksheet
+
+    'Declare counters
     Dim i As Variant, j As Variant, k As Variant
     Dim project As Variant
+    Dim counter As Long
 
-    i = LBound(a_projectKeyArray)
-    j = UBound(a_projectKeyArray)
-    k = a_startingRow
+    'Declare front mid, and rear arrays. This is for removing and placing some projects at the front of the list or at the back of the list
+    Dim frontArray As Variant, midArray As Variant, rearArray As Variant
 
     Set wsTemplate = Worksheets("Template")
 
+    k = a_startingRow
+
+    ' Define front arrays and rear arrays. In the future these should be passed in by the button wrapper function. 
+    ' The array values should be read off "Scripting" worksheet instead of hardcoded
+    frontArray = Array("AWW", "G&A -Admin", "Vacation", "Stat", "Training", "Business Development and Marketing")
+    rearArray = Array("BLANK TEMPLATE (Mechanical Lead)", "PENDING PROJECTS - YEG & YYC", "PENDING PROJECTS - YYZ")
+
+    ' Delete projects from main worksheet
     'For each project in a_projectKeyArray
    '     project.DeleteProject
     'Loop
 
     ' Quicksort function on a_projecKeyArray
-    QuickSortAlphabetical a_projectKeyArray, i, j
+    QuickSortAlphabetical a_projectKeyArray, LBound(a_projectKeyArray), UBound(a_projectKeyArray)
+
+    ' Remove the elements from the main array and place in new array
+    midArray = RemoveKeysFromArray(a_projectKeyArray, frontArray, rearArray)
+
+    ' Combine and redefine a_projectKeyArray
+    ' Redimension the array to the new total size (Front + Middle + Back)
+    Dim newSize As Long
+    newSize = UBound(frontArray) - LBound(frontArray) + 1 + _
+              UBound(midArray) - LBound(midArray) + 1 + _
+              UBound(rearArray) - LBound(rearArray) + 1
+
+    ReDim a_projectKeyArray(1 To newSize) ' Using 1-based index for simplicity
+
+    counter = 1
+
+    ' Populate the final array: FRONT
+    For Each project In frontArray
+        a_projectKeyArray(counter) = project
+        counter = counter + 1
+    Next project
+
+    ' Populate the final array: MIDDLE (Alphabetically Sorted)
+    For Each project In midArray
+        a_projectKeyArray(counter) = project
+        counter = counter + 1
+    Next project
+
+    ' Populate the final array: BACK
+    For Each project In rearArray
+        a_projectKeyArray(counter) = project
+        counter = counter + 1
+    Next project
 
     ' Reapply headrows according to the new sorting and adds project to the list
     For each project in a_projectKeyArray
         a_projectList(project).HeadRow = k
         a_projectList(project).AddProjectBlock team, wsTemplate
         k = k + a_blockHeight
+        Debug.Print project
     Next project
 
     LockScriptingSheet
@@ -332,3 +376,46 @@ Public Sub QuickSortAlphabetical(ByRef a_stringArray() As String, ByVal i As Lon
         QuickSortAlphabetical a_stringArray, i, last
     End If
 End Sub
+
+' Function to remove some items from an array according to two string array inputs frontKeys and backKeys
+Public Function RemoveKeysFromArray(ByRef sourceArray() As String, ByRef frontKeys As Variant, ByRef backKeys As Variant) As String()
+    
+    Dim tempDict As New Scripting.Dictionary
+    Dim item As Variant
+    Dim subItem As Variant
+    Dim combinedKeys As Variant
+    Dim outputArray() As String
+    Dim counter As Long
+    
+    ' 1. Load all elements of the sourceArray into a temporary Dictionary
+    ' This is the easiest way to manage keys for removal
+    For Each item In sourceArray
+        tempDict.Add item, 1 ' Add the project name as the key
+    Next item
+
+    ' 2. Remove frontKeys and backKeys from the temporary Dictionary
+    combinedKeys = Array(frontKeys, backKeys)
+    
+    For Each item In combinedKeys
+        If IsArray(item) Then
+            For Each subItem In item
+                ' Check if the key exists before removing (prevents runtime error)
+                If tempDict.Exists(subItem) Then
+                    tempDict.Remove subItem
+                End If
+            Next subItem
+        End If
+    Next item
+
+    ' 3. Convert the remaining Dictionary keys (the middle, sorted array) back to a string array
+    ReDim outputArray(1 To tempDict.Count)
+    counter = 1
+    
+    For Each item In tempDict.Keys
+        outputArray(counter) = item
+        counter = counter + 1
+    Next item
+    
+    ' Return the array containing only the elements that will form the middle section
+    RemoveKeysFromArray = outputArray
+End Function
