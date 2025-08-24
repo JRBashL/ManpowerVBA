@@ -25,6 +25,7 @@ Public Function GetColumnNum(ByVal colLetter As String) As Long
 End Function
 
 Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyArray() As String, _
+                            ByVal a_specialProjects() As String, _
                             Optional ByVal skipProjectsArgument As Variant)
     ' Reset projectlist and keyArray for refreshing the data in runtime
     projectList.RemoveAll
@@ -38,7 +39,7 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
     Dim projectsToSkip() As Variant
 
     ' Variables for the project block class
-    Dim startingRow As Integer
+    Dim startingRow As Long
     Dim teamMembersQuantity As Integer
     Dim blockHeight As Integer
     Dim blockLength As Integer
@@ -47,7 +48,7 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
     Dim projectLead As String
     Dim projectStatus As String
     Dim mainNotes As String
-    Dim notes(1 To 13) As String
+    Dim notes As Variant
     Dim projectNumber As Variant
     Dim project As ProjectBlockClass
 
@@ -59,6 +60,7 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
     Dim key As Variant
     Dim entry As Variant
     Dim i As Variant
+    Dim noteCount As Long
 
     Set wsAlberta = Worksheets("Alberta")
     Set wsScripting = Worksheets("Scripting")
@@ -75,10 +77,10 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
     ' Check if the optional array was provided. If not, uses default. If yes then assigns to local variable
     If IsMissing(skipProjectsArgument) Then
         projectsToSkip = Array("Weekly Manpower", "% Billable", "Billable Hours","")
-    ElseIf VarType(skipProjectsArgument) = vbArray + vbString Then
+    ElseIf IsArray(skipProjectsArgument) Then
         projectsToSkip = skipProjectsArgument
     Else
-        Err.Raise vbObjectError + 1000, "ReadProjectData", "ReadProjectData requires skipProjects argument to be a string array."
+        Err.Raise vbObjectError + 1001, "ReadProjectData", "ReadProjectData requires skipProjects argument to be a string array."
     End If
         
     ' Main while loop to read the project blocks in the "Alberta" worksheet. Creates a dictionary of projectblocks, using the project name as the key
@@ -93,13 +95,24 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
             ' Skips to the next project block if the project name matches any of the elements in the projectsToSkip array.
             classListCounter = classListCounter + blockHeight
         Else
+            ' Handling notes array size for special projects. Special projects don't have project status merged cells so notes array is resized
+            If CheckMatchStringArray(projectName, a_specialProjects) = True Then
+                Redim notes(1 To blockHeight - 3)
+                For i = 1 To UBound(notes)
+                    notes(i) = wsAlberta.Cells(classListCounter + 2 + i, 1).Value
+                Next i
+            Else
+                Redim notes(1 To blockHeight - 8)
+                For i = 1 To UBound(notes)
+                    notes(i) = wsAlberta.Cells(classListCounter + 7 + i, 1).Value
+                Next i
+            End If
+
             projectLead = wsAlberta.Cells(classListCounter + 1, 1).Value
             projectStatus = wsAlberta.Cells(classListCounter + 5, 1).Value
             mainNotes = wsAlberta.Cells(classListCounter + 3, 1).Value
             projectNumber = wsAlberta.Cells(classListCounter + 2, 1).Value
-            For i = 1 To 13
-                notes(i) = wsAlberta.Cells(classListCounter + 7 + i, 1).Value
-            Next i
+
             headRow = classListCounter
             ' blockheight already defined
             ' blocklength defined
@@ -109,9 +122,14 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
             Set project = New ProjectBlockClass
             
             If projectList.Exists(projectName) Then
-                projectName = projectName + " DUPLICATE PROJECT"              
+                projectName = projectName & " DUPLICATE PROJECT"              
             End if 
-            project.Constructor projectName, projectLead, projectStatus, mainNotes, notes, projectNumber, headRow, blockHeight, blockLength, wsAlberta
+
+            If CheckMatchStringArray(projectName, a_specialProjects) = True Then
+                project.Constructor projectName, projectLead, projectStatus, mainNotes, notes, projectNumber, headRow, blockHeight, blockLength, wsAlberta, True
+            Else
+                project.Constructor projectName, projectLead, projectStatus, mainNotes, notes, projectNumber, headRow, blockHeight, blockLength, wsAlberta
+            End If
             projectList.Add project.ProjectName, project
 
             'Next iteration to jump to the next headrow of the next projectblock
