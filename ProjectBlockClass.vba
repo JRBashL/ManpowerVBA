@@ -148,18 +148,15 @@ End Property
 ' Add project block method to insert the project block onto a worksheet
 Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
 
-    'Comment out. For debugging
-    Dim v_ws As Worksheet
-    Set v_ws = Worksheets("Test")
-
+    Dim i As Integer
     Dim offsetforSpecialProjects as Long
 
-    ' Insert Rows
-    Dim i as Integer
-    For i = 1 to v_blockHeight 
-        v_ws.Rows(v_headRow).Insert Shift:=xlDown
-        Debug.Print v_headRow
-    Next i
+    'Comment out. For debugging
+    'Dim v_ws As Worksheet
+    'Set v_ws = Worksheets("Test")
+
+    'Insert Rows
+    v_ws.Rows(v_headRow).Resize(RowSize:=v_blockHeight).Insert Shift:=xlDown
 
     InsertData
 
@@ -238,6 +235,10 @@ Public Sub AddProjectBlock(team As TeamMembers, templateSheet As String)
 End Sub
 
 Public Sub DeleteProject()
+    ' Comment out. For debugging
+    'Dim v_ws As Worksheet
+    'Set v_ws = Worksheets("Test")
+
     Dim deleteRange as Range
     Set deleteRange = v_ws.Range("A" & v_headRow & ":A" & v_endRow)
     deleteRange.EntireRow.Delete

@@ -48,7 +48,7 @@ Public Sub ReadProjectData(ByRef projectList As Scripting.Dictionary, ByRef keyA
     Dim projectLead As String
     Dim projectStatus As String
     Dim mainNotes As String
-    Dim notes As Variant
+    Dim notes() As Variant
     Dim projectNumber As Variant
     Dim project As ProjectBlockClass
 
@@ -300,9 +300,9 @@ Public Sub SortProjects(ByVal a_team As TeamMembers, _
     rearArray = Array("BLANK TEMPLATE (Mechanical Lead)", "PENDING PROJECTS - YEG & YYC", "PENDING PROJECTS - YYZ")
 
     ' Delete projects from main worksheet
-    'For each project in a_projectKeyArray
-   '     project.DeleteProject
-    'Loop
+    For Each project In a_projectKeyArray
+        a_projectList(project).DeleteProject
+    Next project
 
     ' Quicksort function on a_projecKeyArray
     QuickSortAlphabetical a_projectKeyArray, LBound(a_projectKeyArray), UBound(a_projectKeyArray)
@@ -342,9 +342,9 @@ Public Sub SortProjects(ByVal a_team As TeamMembers, _
     ' Reapply headrows according to the new sorting and adds project to the list
     For each project in a_projectKeyArray
         a_projectList(project).HeadRow = k
-        a_projectList(project).AddProjectBlock team, wsTemplate
+        a_projectList(project).AddProjectBlock team, "Template"
         k = k + a_blockHeight
-        Debug.Print project
+        Debug.Print "From SortProjects | " & a_projectList(project).ProjectName & " | HeadRow: " & a_projectList(project).HeadRow
     Next project
 
     LockScriptingSheet
