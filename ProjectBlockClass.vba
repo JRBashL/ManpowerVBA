@@ -1,10 +1,9 @@
-' === ProjectBlock.vba ===
+' === ProjectBlockClass.vba ===
 ' This is in a class module
-' Strong type things like in C#
+
 Option Explicit
 
 '--- Properties ---
-Private v_isSpecialProject As Boolean
 Private v_projectName As String
 Private v_teamLead As String
 Private v_projectNumber As Variant
@@ -18,6 +17,7 @@ Private v_blockLength As Integer
 Private v_endColLetter As String
 Private v_data As Variant
 Private v_ws As Worksheet
+Private v_isSpecialProject As Boolean
 
 '--- Constructor-like method ---
 Public Sub Constructor( ByVal a_projectName As String, _
@@ -57,6 +57,7 @@ Public Sub Constructor( ByVal a_projectName As String, _
         noteCount = blockHeight - 8
     End If
 
+    ' Create notes according to isSpecialProject noteCount from earlier controls the sizing
     If LBound(a_notes) <> 1 Or UBound(a_notes) <> noteCount Then
         Err.Raise vbObjectError + 1000, , "a_notes must be an array with " & noteCount & " elements."
     Else
