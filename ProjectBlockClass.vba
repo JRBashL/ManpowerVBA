@@ -251,8 +251,6 @@ Public Sub OccupyData()
 End Sub
 
 Public Sub InsertData()
-    Dim i As Long, j As Long
-
     ' Declare variables for error handling
     Dim rangeRows As Long
     Dim rangeCols As Long
@@ -262,7 +260,7 @@ Public Sub InsertData()
     Set v_ws = Worksheets("Test")
 
     ' Define the target range and define the rows and columns count
-    targetRange = v_ws.Range("C" & (v_headRow + 1) & ":" & GetColumnLetter(v_blockLength - 1) & (v_endRow))
+    Set targetRange = v_ws.Range("C" & (v_headRow + 1) & ":" & GetColumnLetter(v_blockLength - 1) & (v_endRow))
     rangeRows = targetRange.Rows.Count
     rangeCols = targetRange.Columns.Count
 
