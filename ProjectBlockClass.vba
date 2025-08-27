@@ -253,27 +253,25 @@ End Sub
 Public Sub InsertData()
     Dim i As Long, j As Long
 
+    ' Declare variables for error handling
+    Dim rangeRows As Long
+    Dim rangeCols As Long
+    Dim targetRange As Range
+
     ' For Debugging
     Set v_ws = Worksheets("Test")
 
-    ' Outer if statement checks if v_data 2D array has been made. If so then writes it to cell. If not then writes blanks
-    If IsArray(v_data) And Not IsEmpty(v_data) Then
-        For i = LBound(v_data, 1) to UBound(v_data, 1)
-            For j = LBound(v_data, 2) to UBound(v_data, 2)
-                If v_data(i,j) = 0 Then
-                    v_ws.Cells(v_headrow + i, GetColumnNum("C") + j - 1).Value = ""
-                Else
-                    v_ws.Cells(v_headrow + i, GetColumnNum("C") + j - 1).Value = v_data(i,j)
-                End If
-            Next j
-        Next i
+    ' Define the target range and define the rows and columns count
+    targetRange = v_ws.Range("C" & (v_headRow + 1) & ":" & GetColumnLetter(v_blockLength - 1) & (v_endRow))
+    rangeRows = targetRange.Rows.Count
+    rangeCols = targetRange.Columns.Count
+
+    ' Check if v_data matches the target range dimensions
+    ' The starting column is hardcorded as "C" and this can be further generalized to be read off the scripting worksheet
+    If IsArray(v_data) And Not IsEmpty(v_data) And UBound(v_data, 1) = rangeRows And UBound(v_data, 2) = rangeCols Then
+        targetRange.Value = v_data
     Else
-        For i = LBound(v_data, 1) to UBound(v_data, 1)
-            For j = LBound(v_data, 2) to UBound(v_data, 2)
-                v_ws.Cells(v_headrow + i, GetColumnNum("C") + j - 1).Value = ""
-            Next j
-        Next i
-        OccupyData
+        MsgBox "Error: The dimensions of v_data do not match the target range.", vbCritical
     End If
 End Sub
 
