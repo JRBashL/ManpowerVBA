@@ -437,3 +437,34 @@ Public Function RemoveKeysFromArray(ByRef sourceArray() As String, ByRef frontKe
     ' Return the array containing only the elements that will form the middle section
     RemoveKeysFromArray = outputArray
 End Function
+
+'Sub will remove projectblock from the sheet. Utilizes class method as well as alter the projectlist, keyarray, 
+Public Sub DeleteProject(ByRef a_projectToDelete As String, _
+                        ByVal a_team As TeamMembers, _
+                        ByRef a_projectList As Scripting.Dictionary, _
+                        ByRef a_projectKeyArray() As String, _
+                        ByVal a_blockHeight As Integer, _
+                        ByVal a_startingRow As Integer)
+    Dim projectToDelete(1) As String
+    Dim entry As Variant
+    Dim i As Integer
+
+    ' Turn string input to array to use RemoveKeysFromArray Function
+    projectToDelete(1) = a_projectToDelete
+
+    ' Initialize i as the starting row
+    i = a_startingRow
+
+    ' Use class method to remove project from the list
+    a_projectList(a_projecToDelete).DeleteProject
+
+    'Update dictionary and keyarray
+    a_projectKeyArray = RemoveKeysFromArray(a_projectKeyArray, projectToDelete, "N/A", )
+    a_projectList.Remove a_projectToDelete
+
+    'Update headrows now that the project has been deleted
+    For each entry in a_projecKeyArray
+        a_projectList(entry).HeadRow = i
+        i = i + a_blockHeight
+    Loop
+End Sub
