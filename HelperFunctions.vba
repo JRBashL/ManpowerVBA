@@ -300,9 +300,7 @@ Public Sub SortProjects(ByVal a_team As TeamMembers, _
     rearArray = Array("BLANK TEMPLATE (Mechanical Lead)", "PENDING PROJECTS - YEG & YYC", "PENDING PROJECTS - YYZ")
 
     ' Delete projects from main worksheet
-    For Each project In a_projectKeyArray
-        a_projectList(project).DeleteProject
-    Next project
+    DeleteAllProjects a_startingRow, a_projectList
 
     ' Quicksort function on a_projecKeyArray
     QuickSortAlphabetical a_projectKeyArray, LBound(a_projectKeyArray), UBound(a_projectKeyArray)
@@ -438,33 +436,15 @@ Public Function RemoveKeysFromArray(ByRef sourceArray() As String, ByRef frontKe
     RemoveKeysFromArray = outputArray
 End Function
 
-'Sub will remove projectblock from the sheet. Utilizes class method as well as alter the projectlist, keyarray, 
-Public Sub DeleteProject(ByRef a_projectToDelete As String, _
-                        ByVal a_team As TeamMembers, _
-                        ByRef a_projectList As Scripting.Dictionary, _
-                        ByRef a_projectKeyArray() As String, _
-                        ByVal a_blockHeight As Integer, _
-                        ByVal a_startingRow As Integer)
-    Dim projectToDelete(1) As String
+'Sub will remove all projectblocks from sheet. Sheet is defined in the class v_ws. Does not update scripting dictionary and key array
+Public Sub DeleteAllProjects(ByVal a_projectList As Scripting.Dictionary, _
+                            ByVal a_startingRow As Integer)
+
     Dim entry As Variant
-    Dim i As Integer
 
-    ' Turn string input to array to use RemoveKeysFromArray Function
-    projectToDelete(1) = a_projectToDelete
+    For each entry in ByVal_a_projectKeyArray
+        a_projectList(Cstr(entry)).HeadRow = a_startingRow
+        a_projectList(Cstr(entry)).DeleteProject
+    Next entry
 
-    ' Initialize i as the starting row
-    i = a_startingRow
-
-    ' Use class method to remove project from the list
-    a_projectList(a_projecToDelete).DeleteProject
-
-    'Update dictionary and keyarray
-    a_projectKeyArray = RemoveKeysFromArray(a_projectKeyArray, projectToDelete, "N/A", )
-    a_projectList.Remove a_projectToDelete
-
-    'Update headrows now that the project has been deleted
-    For each entry in a_projecKeyArray
-        a_projectList(entry).HeadRow = i
-        i = i + a_blockHeight
-    Loop
 End Sub
